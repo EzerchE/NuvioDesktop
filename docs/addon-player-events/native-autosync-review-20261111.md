@@ -23,6 +23,12 @@ Own-fork Desktop test build only. The installed Nuvio application, original prof
 
 ## Limits and remaining acceptance
 
+Fresh full-application run: https://github.com/EzerchE/NuvioDesktop/actions/runs/43028462866 at `346c864`. Desktop/native compilation and isolated packaging passed. The complete suite ran 1,907 tests: 1,905 passed, one skipped, and the previously intermittent `CollectionCardRemoteImageTest.animatedImageDoesNotRequireAFileExtension` failed its five-second rendering condition. The workflow correctly failed at the explicit test gate. The five deterministic baseline fixtures and all added subtitle/event tests passed. No timeout was relaxed or test excluded. The exported bundle is still an unpublished draft.
+
+After the event-dispatcher fix, a resumed native playback produced a start event at 309,625 ms. The loopback subtitle responses were deliberately delayed by six seconds and generated notice plans from the current position after preparation. Native playback displayed the note together with Dutch dialogue at 05:26; its final retimed SRT retained compound notice cues spanning 323.151 to 333.151 seconds. Native source labels and the selected addon remained present.
+
+This does not establish a single exact ten-second wall-clock interval from the first download. The native engine and AutoSync still acquire the same mutable URL independently; their responses can schedule different intervals. Exact-byte sharing between the native load and analysis, or preferably a client-owned subtitle-loaded overlay, remains necessary before claiming that stronger behavior. An initial layout resize was also needed to activate the native surface in this test build. Neither limitation is being called a production USS fix.
+
 The late-load/resume note interval and the complete feature CI result must be recorded separately before claiming completion. No audio listening or audio verification was performed by these checks. The public Blender case does not establish that the reported The Middle RCVR release is fixed. Ordinary Nuvio users do not receive this own-fork prototype through a USS server update.
 
 The five deterministic baseline failures received fixture-only corrections: host-independent file paths, the Desktop settings policy and a realistic-duration legacy watch-progress example. The two historical intermittent rendering/QuickJS failures were not declared fixed. The already-recorded unchanged-base build is reused rather than rerun on every feature push.

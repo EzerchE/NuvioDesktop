@@ -32,6 +32,8 @@ Guessing a video position on the addon server is unreliable. Repeating notices a
 
 ## Evidence to attach
 
+Latest evidence: [native AutoSync follow-up](native-autosync-review-20261111.md). The combined Desktop/native application compiles; 1,905 of 1,907 full-suite tests passed, one skipped, with one already-known intermittent image-render test still failing. Same-file Dutch playback passed AutoSync off/on without a second timing shift. Native consent is visible over the heavyweight surface, and a six-second delayed subtitle showed the position-based note with dialogue. Separate acquisitions of a mutable SRT still prevent a claim that the first rendered notice lasts exactly ten seconds. This strengthens the product case for a native selected-subtitle-loaded overlay rather than expanding activity permission merely for a note.
+
 The full Desktop application and Windows native bridge compiled at c65ced3. The full suite ran 1,899 tests with nine failures and one skip; do not describe the workflow as green. The new 16 focused event tests passed, along with a real Desktop HTTP transport loopback probe for cancellation, timeout, redirect refusal and an empty successful response. See README for the exact failing suites and CI link. Permission-before/after-download order, same-file resume, long preparation and actual patched-native rendering must still be reported separately with actual outcomes. Do not replace pending acceptance with fixture screenshots or claim guaranteed sync.
 
 All fixtures must be synthetic, loopback-only and credential-free. Keep permission copy localized before an upstream release. No extra app or paid account is required of addon users.
