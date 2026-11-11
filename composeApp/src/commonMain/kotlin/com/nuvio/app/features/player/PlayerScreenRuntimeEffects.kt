@@ -437,6 +437,7 @@ internal fun PlayerScreenRuntime.BindPlayerRuntimeEffects() {
         ready = initialSeekApplied && initialLoadCompleted && playbackSnapshotKey == activePlaybackKey,
         speed = playbackSnapshot.playbackSpeed,
         selectedManifest = selectedAddonSubtitle?.addonManifestUrl,
+        sendEvent = { AddonPlayerEventTransport.send(it) },
         onRefreshSubtitle = { selectedAddonSubtitle?.let { playerController?.setSubtitleUri(it.url) } },
     )
     BindPlayerMetadataAndSkipEffects()

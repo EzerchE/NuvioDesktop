@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberUpdatedState
 import kotlinx.coroutines.channels.Channel
 import com.nuvio.app.features.addons.AddonRepository
-import com.nuvio.app.features.addons.httpGetTextWithHeaders
 import com.nuvio.app.features.addons.supportsResource
 import com.nuvio.app.features.profiles.ProfileRepository
 import kotlin.time.TimeSource
@@ -25,6 +24,7 @@ internal fun AddonPlayerEventEffects(
     durationMs: Long, playing: Boolean, loading: Boolean, ended: Boolean,
     ready: Boolean, speed: Float,
     selectedManifest: String?, onRefreshSubtitle: () -> Unit,
+    sendEvent: suspend (String) -> Unit,
 ) {
     val addons by AddonRepository.uiState.collectAsState()
     // Consent is intentionally session-only until upstream agrees on persisted permissions.
@@ -45,7 +45,7 @@ internal fun AddonPlayerEventEffects(
             profileIsCurrent = { ProfileRepository.activeProfileId == profileId },
             // Desktop's native subtitle download uses libmpv. Keep the event
             // transport identity consistent without changing video HTTP headers.
-            send = { url -> httpGetTextWithHeaders(url, mapOf("Cache-Control" to "no-store", "User-Agent" to "libmpv")) },
+            send = sendEvent,
             onDelivered = { target -> acknowledgements.trySend(target) },
         )
     }

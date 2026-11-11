@@ -9,7 +9,7 @@ root=pathlib.Path(__file__).resolve().parents[2]; tool=pathlib.Path(a.toolchain)
 
 app=pathlib.Path(a.app)
 cp=os.pathsep.join(map(str,[*app.glob('*.jar'),tool/'junit-4.13.2.jar',tool/'hamcrest-core-1.3.jar',lib/'kotlin-test.jar',lib/'kotlin-test-junit.jar']))
-sources=[*root.glob('composeApp/src/commonMain/kotlin/com/nuvio/app/features/player/AddonPlayerEvent*.kt'),root/'composeApp/src/commonMain/kotlin/com/nuvio/app/features/addons/AddonTransportUrls.kt',root/'composeApp/src/commonTest/kotlin/com/nuvio/app/features/player/AddonPlayerEventsTest.kt']
+sources=[*[root/'composeApp/src/commonMain/kotlin/com/nuvio/app/features/player'/name for name in ['AddonPlayerEvents.kt','AddonPlayerEventSender.kt','AddonPlayerEventEffects.kt']],root/'composeApp/src/commonMain/kotlin/com/nuvio/app/features/addons/AddonTransportUrls.kt',root/'composeApp/src/commonTest/kotlin/com/nuvio/app/features/player/AddonPlayerEventsTest.kt']
 args=[str(java),'-cp',str(lib/'*'),'org.jetbrains.kotlin.cli.jvm.K2JVMCompiler','-no-stdlib','-no-reflect','-jvm-target','17','-Xplugin='+str(lib/'compose-compiler-plugin.jar'),'-classpath',cp,'-d',str(root/'.local/compiled'),*map(str,sources)]
 result=subprocess.run(args,capture_output=True,text=True);print(result.stdout,result.stderr);
 if result.returncode: raise SystemExit(result.returncode)
