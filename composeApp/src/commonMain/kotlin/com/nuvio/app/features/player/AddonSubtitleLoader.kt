@@ -31,6 +31,7 @@ data class SubtitleAddonRequest(
     val url: String,
     val addonId: String,
     val addonName: String,
+    val manifestUrl: String? = null,
 )
 
 data class SubtitleRequestExtras(
@@ -104,6 +105,7 @@ internal fun addonSubtitleRequests(
             url = buildSubtitleRequestUrl(manifest.transportUrl, requestType, videoId, extras),
             addonId = manifest.id,
             addonName = addon.displayTitle,
+            manifestUrl = manifest.transportUrl,
         )
     }
 }
@@ -148,6 +150,7 @@ private suspend fun parseAddonSubtitles(response: String, request: SubtitleAddon
             ),
             addonName = request.addonName,
             label = addonProvidedId?.takeIf { it != language && it != url },
+            addonManifestUrl = request.manifestUrl,
         )
     }
 }

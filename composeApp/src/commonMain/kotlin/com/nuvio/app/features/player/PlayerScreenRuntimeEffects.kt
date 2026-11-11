@@ -429,6 +429,16 @@ internal fun PlayerScreenRuntime.BindPlayerRuntimeEffects() {
     }
 
     BindPlayerUiVisibilityEffects()
+    if (isDesktop) AddonPlayerEventEffects(
+        profileId = profileId, key = activePlaybackKey, type = activeAddonSubtitleType,
+        id = activeVideoId, positionMs = playbackSnapshot.positionMs,
+        durationMs = playbackSnapshot.durationMs, playing = playbackSnapshot.isPlaying,
+        loading = playbackSnapshot.isLoading, ended = playbackSnapshot.isEnded,
+        ready = initialSeekApplied && initialLoadCompleted && playbackSnapshotKey == activePlaybackKey,
+        speed = playbackSnapshot.playbackSpeed,
+        selectedManifest = selectedAddonSubtitle?.addonManifestUrl,
+        onRefreshSubtitle = { selectedAddonSubtitle?.let { playerController?.setSubtitleUri(it.url) } },
+    )
     BindPlayerMetadataAndSkipEffects()
     BindPartyEffects()
 
