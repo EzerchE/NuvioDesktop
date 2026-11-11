@@ -15,9 +15,18 @@ jobs:
     env:
       WEBVIEW2_VERSION: 1.0.4078.44
     steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
+      - name: Fetch public feature commit without credentials
+        shell: pwsh
+        env:
+          GIT_LFS_SKIP_SMUDGE: '1'
+          VERIFY_SHA: ${{ github.sha }}
+        run: |
+          git init .
+          git remote add origin https://github.com/EzerchE/NuvioDesktop.git
+          git fetch --depth=1 --no-tags origin $env:VERIFY_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Public fetch failed' }
+          git checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Feature checkout failed' }
       - name: Fetch only desktop resources and native runtime
         shell: bash
         run: |
