@@ -88,6 +88,7 @@ internal class AutoSyncMpvCoordinator(
         candidateScope: AutoSyncCandidateScope,
         base: PlayerEngineController,
         replaceExternalSubtitle: (replacedUrl: String, path: String) -> Unit,
+        refreshSelectedBody: Boolean = false,
     ) {
         cancel()
         val token = operationToken
@@ -100,6 +101,7 @@ internal class AutoSyncMpvCoordinator(
         }
 
         val subtitleHeaders = getSubtitleHeaders(url)
+        if (refreshSelectedBody) AutomaticSubtitleSync.invalidateSelectedSubtitle(url, subtitleHeaders)
         val subtitleLanguage = candidates.firstOrNull { it.url == url }?.language
             ?.takeIf { it.isNotBlank() } ?: getPreferredLanguage()
         EmbeddedSubtitleTimelineLoader.prefetch(scope, sourceUrl, sourceHeaders)
@@ -206,6 +208,7 @@ internal open class AutoSyncMpvEngineController(
     private val coordinator: AutoSyncMpvCoordinator,
     private val replaceExternalSubtitle: (replacedUrl: String, path: String) -> Unit,
 ) : PlayerEngineController by base, AutoSyncPlayerController {
+    private var manualDelaySelected = false
 
     override fun setAutoSyncSubtitleCandidates(candidates: List<AutoSyncSubtitleCandidate>) =
         coordinator.setCandidates(candidates)
@@ -219,14 +222,30 @@ internal open class AutoSyncMpvEngineController(
         base.setSubtitleUri(url)
     }
 
-    override fun setSubtitleUriWithAutoSync(url: String) =
+    override fun setSubtitleUriWithAutoSync(url: String) {
+        manualDelaySelected = false
         coordinator.start(url, AutoSyncCandidateScope.STARTUP_SEARCH, base, replaceExternalSubtitle)
+    }
 
-    override fun setSubtitleUriWithSelectedAutoSync(url: String) =
+    override fun setSubtitleUriWithSelectedAutoSync(url: String) {
+        manualDelaySelected = false
         coordinator.start(url, AutoSyncCandidateScope.SELECTED_ONLY, base, replaceExternalSubtitle)
+    }
 
-    override fun setSubtitleUriWithRestoredAutoSync(url: String) =
+    override fun setSubtitleUriWithRestoredAutoSync(url: String) {
+        manualDelaySelected = false
         coordinator.start(url, AutoSyncCandidateScope.SELECTED_THEN_SEARCH, base, replaceExternalSubtitle)
+    }
+
+    override fun refreshSelectedSubtitle(url: String, manualDelayMs: Int) {
+        if (manualDelaySelected || manualDelayMs != 0) {
+            // Do not start a job which would reset the user's manual offset to zero.
+            setSubtitleUri(url)
+        } else {
+            coordinator.start(url, AutoSyncCandidateScope.SELECTED_ONLY, base,
+                replaceExternalSubtitle, refreshSelectedBody = true)
+        }
+    }
 
     override fun selectSubtitleTrack(index: Int) {
         coordinator.cancel()
@@ -244,6 +263,7 @@ internal open class AutoSyncMpvEngineController(
     }
 
     override fun cancelForManualSubtitleDelay() {
+        manualDelaySelected = true
         coordinator.cancel()
         AutoSyncSyncedSubtitle.clear()
     }

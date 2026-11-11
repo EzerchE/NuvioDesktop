@@ -148,10 +148,13 @@ private fun NativePlayerSurface(
             sourceUrl = sourceUrl,
             sourceHeaders = playbackHeaders,
             getSubtitleHeaders = { subtitleUrl ->
-                latestExternalSubtitles.value
+                val headers = latestExternalSubtitles.value
                     .firstOrNull { it.url == subtitleUrl }
                     ?.headers
                     .orEmpty()
+                // Analyze the same addon representation loaded by the native subtitle engine.
+                if (headers.keys.any { it.equals("User-Agent", ignoreCase = true) }) headers
+                else headers + ("User-Agent" to "libmpv")
             },
             getPreferredLanguage = { PlayerSettingsRepository.uiState.value.preferredSubtitleLanguage },
             platform = autoSyncPlatform,

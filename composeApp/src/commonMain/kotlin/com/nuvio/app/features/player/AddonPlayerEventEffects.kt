@@ -1,8 +1,5 @@
 package com.nuvio.app.features.player
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -50,17 +47,15 @@ internal fun AddonPlayerEventEffects(
         )
     }
     if (allowed == null && ProfileRepository.activeProfileId == profileId && candidates.isNotEmpty() && ready && !loading && durationMs > 0L) {
-        AlertDialog(
-            onDismissRequest = { allowed = emptySet() },
-            title = { Text("Share playback position with add-ons?") },
-            text = { Text("Only these add-ons will receive the video ID, position and play/pause/stop state for this session: " +
-                candidates.joinToString { it.displayTitle } + ". No video URL or filename is sent.") },
-            confirmButton = { TextButton(onClick = {
+        AddonPositionConsentPrompt(
+            message = "Only these add-ons will receive the video ID, position and play/pause/stop state for this session: " +
+                candidates.joinToString { it.displayTitle } + ". No video URL or filename is sent.",
+            onAllow = {
                 val consented = candidates.map { it.manifestUrl }.toSet()
                 refreshGate.grant(key, consented)
                 allowed = consented
-            }) { Text("Allow for this session") } },
-            dismissButton = { TextButton(onClick = { allowed = emptySet() }) { Text("Not now") } },
+            },
+            onDecline = { allowed = emptySet() },
         )
     }
     LaunchedEffect(profileId, key, type, id, targets, positionMs / 1000L, durationMs, playing, loading, ended, ready, speed) {

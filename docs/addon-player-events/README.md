@@ -26,6 +26,8 @@ Focused reproduction uses the existing local JRE/compiler and app jars only, wit
 
 ## Remaining acceptance and upstream policy
 
+Update: [the native AutoSync follow-up](native-autosync-review-20261111.md) records later same-file playback and 66 passing focused checks. Statements below about pending native playback describe the earlier build stage. The late-load note interval and fresh full-suite outcome are still separate acceptance items.
+
 - Full Dev application and the Windows C++ player bridge compiled in CI. Native movie playback with the patched application has not run. No installed Nuvio application was replaced and no perfect-sync claim is made.
 - A subtitle loaded before consent is refreshed once, only when it is the selected consented addon and a current player event has been successfully delivered. Native permission/first-download ordering and the rendered ten-second interval still require full patched-client acceptance.
 - Session permission copy is currently English. It needs upstream resource localization and product review before release. Persisted per-addon consent is deliberately not added without that approval.

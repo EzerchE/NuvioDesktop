@@ -8,11 +8,15 @@ import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Dispatcher
 import okhttp3.Request
 import okhttp3.Response
 
 internal actual object AddonPlayerEventTransport {
     private val client = desktopHttpClient.newBuilder()
+        // newBuilder shares the original dispatcher unless explicitly replaced.
+        // A slow subtitle queue must not consume the event's short delivery budget.
+        .dispatcher(Dispatcher().apply { maxRequests = 8; maxRequestsPerHost = 8 })
         .callTimeout(2, TimeUnit.SECONDS)
         .connectTimeout(2, TimeUnit.SECONDS)
         .readTimeout(2, TimeUnit.SECONDS)

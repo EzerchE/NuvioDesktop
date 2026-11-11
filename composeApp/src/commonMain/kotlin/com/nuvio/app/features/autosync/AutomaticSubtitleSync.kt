@@ -90,6 +90,13 @@ internal object AutomaticSubtitleSync {
         AutoSyncLruCache<ParsedSubtitleCacheKey, CachedParsedSubtitle>(MAX_PARSED_SUBTITLE_CACHE_ENTRIES)
     private val referenceActivityLock = SynchronizedObject()
 
+    /** Only explicit same-track refreshes invalidate these bytes, never the reference cache. */
+    internal fun invalidateSelectedSubtitle(url: String, headers: Map<String, String>) {
+        synchronized(parsedSubtitleCacheLock) {
+            parsedSubtitleCache.remove(ParsedSubtitleCacheKey(url, stableHeaderIdentity(headers)))
+        }
+    }
+
     suspend fun findTimelineRetime(
         sourceKey: String,
         selectedSubtitleUrl: String,

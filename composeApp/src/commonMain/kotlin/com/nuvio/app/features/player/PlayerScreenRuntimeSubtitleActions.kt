@@ -13,7 +13,7 @@ internal fun PlayerScreenRuntime.fetchAddonSubtitlesForActiveItem() {
         return
     }
     // Without a network the addon lookup can only hang; keep the local state untouched.
-    if (isNetworkOffline()) return
+    if (deferAddonSubtitleRequest(com.nuvio.app.core.network.NetworkStatusRepository.uiState.value.condition)) return
     val type = activeAddonSubtitleType.takeIf { it.isNotBlank() } ?: return
     val videoId = activeVideoId?.takeIf { it.isNotBlank() } ?: return
     val extras = activeSubtitleExtras

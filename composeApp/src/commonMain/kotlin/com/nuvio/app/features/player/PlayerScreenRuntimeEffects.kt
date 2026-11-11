@@ -317,8 +317,9 @@ internal fun PlayerScreenRuntime.BindPlayerRuntimeEffects() {
         if (activeTorrentInfoHash != null && p2pResolvedSourceUrl == null) return@LaunchedEffect
         val effectiveFetchKey = if (p2pResolvedSourceUrl != null) "$fetchKey|p2p" else fetchKey
         if (autoFetchedAddonSubtitlesForKey == effectiveFetchKey) return@LaunchedEffect
-        // Offline: leave the key unset so the fetch can run once connectivity returns.
-        if (isNetworkOffline()) return@LaunchedEffect
+        // An unavailable account server must not block independent addon hosts.
+        // On an actual internet outage, leave the key unset for a later retry.
+        if (deferAddonSubtitleRequest(networkCondition)) return@LaunchedEffect
         autoFetchedAddonSubtitlesForKey = effectiveFetchKey
         fetchAddonSubtitlesForActiveItem()
     }
@@ -438,7 +439,16 @@ internal fun PlayerScreenRuntime.BindPlayerRuntimeEffects() {
         speed = playbackSnapshot.playbackSpeed,
         selectedManifest = selectedAddonSubtitle?.addonManifestUrl,
         sendEvent = { AddonPlayerEventTransport.send(it) },
-        onRefreshSubtitle = { selectedAddonSubtitle?.let { playerController?.setSubtitleUri(it.url) } },
+        onRefreshSubtitle = {
+            selectedAddonSubtitle?.let { subtitle ->
+                val controller = playerController
+                if (controller is com.nuvio.app.features.autosync.AutoSyncPlayerController) {
+                    controller.refreshSelectedSubtitle(subtitle.url, subtitleDelayMs)
+                } else {
+                    controller?.setSubtitleUri(subtitle.url)
+                }
+            }
+        },
     )
     BindPlayerMetadataAndSkipEffects()
     BindPartyEffects()

@@ -24,6 +24,8 @@ The five host/fixture expectation failures were not silently excluded or called 
 
 ## Bundle boundary
 
+Follow-up: the five deterministic fixture failures have now been corrected without changing production behavior. Sixty-six targeted tests passed locally, including these suites and the new network/refresh checks. A fresh complete suite is required for the combined feature; the earlier comparison is not being rebuilt on every push. See [native interoperability evidence](native-autosync-review-20261111.md).
+
 Only an own-fork, unpublished draft release was authorized for native acceptance. The unsigned app is extracted into an isolated directory, using separate APPDATA, LOCALAPPDATA and user.home values. The installed Nuvio app and its original configuration are not replaced. Never upload the local test profile or its logs wholesale. The bundle is a test build, not an official Nuvio release.
 
 ## Remaining native acceptance

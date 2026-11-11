@@ -45,23 +45,7 @@ jobs:
           nuget install Microsoft.Web.WebView2 -Version $env:WEBVIEW2_VERSION -OutputDirectory "$env:RUNNER_TEMP\nuget" -DirectDownload -NonInteractive -NoCache
           if ($LASTEXITCODE -ne 0) { throw 'WebView2 preparation failed' }
           "WEBVIEW2_ROOT=$env:RUNNER_TEMP\nuget\Microsoft.Web.WebView2.$env:WEBVIEW2_VERSION" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Compare reported failures against unchanged Dev base
-        shell: pwsh
-        env:
-          FEATURE_SHA: ${{ github.sha }}
-        run: |
-          git fetch --depth=1 --no-tags origin 37ce07d351fc69e17d05a4640ef78d08deba20e2
-          if ($LASTEXITCODE -ne 0) { throw 'Baseline fetch failed' }
-          git checkout --detach 37ce07d351fc69e17d05a4640ef78d08deba20e2
-          if ($LASTEXITCODE -ne 0) { throw 'Baseline checkout failed' }
-          & .\gradlew.bat :composeApp:desktopTest --tests '*DesktopCacheTest' --tests '*CollectionCardRemoteImageTest' --tests '*PluginRuntimeDesktopTest' --tests '*SettingsNavigationTest' --tests '*LinuxUpdateInstallTest' --tests '*WatchProgressIdentityTest' --no-daemon --no-configuration-cache --max-workers=2 '-Dorg.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8' '-Pkotlin.daemon.jvmargs=-Xmx6144m' "-Pnuvio.webview2.dir=$env:WEBVIEW2_ROOT"
-          $baselineExit = $LASTEXITCODE
-          New-Item -ItemType Directory -Force .verification/baseline | Out-Null
-          Get-ChildItem composeApp/build/test-results -Recurse -Filter 'TEST-*.xml' | Copy-Item -Destination .verification/baseline
-          "Baseline selected-suite exit: $baselineExit" | Out-File .verification/baseline-exit.txt
-          git checkout --detach $env:FEATURE_SHA
-          if ($LASTEXITCODE -ne 0) { throw 'Feature checkout failed' }
-          exit 0
+      # The unchanged-base comparison is recorded in run 43011337221. Do not rebuild it on every push.
       - name: Build full Desktop app and run Desktop tests
         shell: pwsh
         run: |
@@ -120,3 +104,8 @@ jobs:
             [xml]$report = Get-Content $_.FullName
             "$($report.testsuite.name): tests=$($report.testsuite.tests), failures=$($report.testsuite.failures), errors=$($report.testsuite.errors)" | Out-File $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
           }
+      - name: Enforce recorded test outcome
+        shell: pwsh
+        run: |
+          if (!(Test-Path .verification/feature-exit.txt)) { throw 'Feature test outcome missing' }
+          if ((Get-Content .verification/feature-exit.txt) -notmatch 'exit: 0$') { throw 'Feature desktop suite failed; see retained summary' }

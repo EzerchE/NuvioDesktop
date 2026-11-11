@@ -16,6 +16,9 @@ internal interface AutoSyncPlayerController {
     fun setSubtitleUriWithAutoSync(url: String)
     fun setSubtitleUriWithSelectedAutoSync(url: String)
 
+    /** Explicit same-track refresh after addon consent; keep the user's selected track. */
+    fun refreshSelectedSubtitle(url: String, manualDelayMs: Int = 0) = setSubtitleUriWithSelectedAutoSync(url)
+
     /** A selection restored from an earlier episode: keep it if it fits, else search others. */
     fun setSubtitleUriWithRestoredAutoSync(url: String)
     fun setAutoSyncAppliedListener(
