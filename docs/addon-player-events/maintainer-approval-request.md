@@ -32,6 +32,10 @@ Guessing a video position on the addon server is unreliable. Repeating notices a
 
 ## Evidence to attach
 
-The accompanying README records earlier focused Kotlin and loopback protocol evidence. Full application compilation, permission-before/after-download order, same-file resume, long subtitle preparation, profile switches, refusal, cancellation, and native rendering must be reported separately with actual outcomes. Do not replace pending acceptance with fixture screenshots or claim guaranteed sync.
+The full Desktop application and Windows native bridge compiled at c65ced3. The full suite ran 1,899 tests with nine failures and one skip; do not describe the workflow as green. The new 16 focused event tests passed, along with a real Desktop HTTP transport loopback probe for cancellation, timeout, redirect refusal and an empty successful response. See README for the exact failing suites and CI link. Permission-before/after-download order, same-file resume, long preparation and actual patched-native rendering must still be reported separately with actual outcomes. Do not replace pending acceptance with fixture screenshots or claim guaranteed sync.
 
 All fixtures must be synthetic, loopback-only and credential-free. Keep permission copy localized before an upstream release. No extra app or paid account is required of addon users.
+
+## Product question
+
+Position events do not expose audio, embedded tracks or file hashes and do not by themselves improve sync or translation. For a short information note, a native selected-subtitle-loaded notice may be more proportionate than broad watch-activity permission. Please advise on this direction before further implementation or rollout.
