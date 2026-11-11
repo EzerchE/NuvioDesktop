@@ -51,14 +51,22 @@ The local full Dev build has not passed. Initial failures were missing WebView2 
 
 A two-process full Kotlin compilation failed with Java heap exhaustion. A bounded single-process retry was stopped when the 8 GB workstation approached memory exhaustion. No main application or user configuration was replaced. The user authorized pushing only this feature branch to their public fork for standard Windows 16 GB runner verification. The workflow has read-only permissions, no secrets, no signing, no release publication, and no artifact/cache upload. CI success, if obtained, is compilation/test evidence rather than native playback evidence.
 
-## Fresh full-build result
+## Initial full-build result
 
 Feature commit c65ced3152a11654679edc1e7b5476662880e939 was verified in https://github.com/EzerchE/NuvioDesktop/actions/runs/43008412217 on the standard public Windows runner. buildWindowsPlayerBridge, desktopJar and test compilation completed. The full desktop suite reported 1,899 tests, nine failures and one skip (1,889 passed). The new player-event suite was not among the failures; the same 16 focused tests also passed locally.
 
-The overall workflow is failed, not green. Failures are two DesktopCacheTest cases, CollectionCardRemoteImageTest, PluginRuntimeDesktopTest, SettingsNavigationTest, three LinuxUpdateInstallTest cases and WatchProgressIdentityTest. These occur outside the edited modules, but a same-run base comparison has not been performed, so this evidence alone does not prove that all nine predate the patch. Do not silently exclude them or report a clean complete suite. Build outputs were not uploaded or installed; actual patched-native video/consent rendering remains pending.
+The overall workflow is failed, not green. Failures are two DesktopCacheTest cases, CollectionCardRemoteImageTest, PluginRuntimeDesktopTest, SettingsNavigationTest, three LinuxUpdateInstallTest cases and WatchProgressIdentityTest. These occur outside the edited modules, and that initial run did not include a base comparison. The subsequent comparison below now separates reproduced base failures from intermittent failures. Do not silently exclude them or report a clean complete suite. Build outputs were not uploaded or installed; actual patched-native video/consent rendering remains pending.
 
 The initial checkout failure came from an upstream gitlink without a matching .gitmodules URL. The verification workflow now uses a credential-free public checkout. A superseded build was cancelled when the actual HTTP cancellation fix was pushed, rather than running both builds to completion.
 
 ## Permission tradeoff
 
 These player events provide position and state, not audio, embedded subtitle text or video filename/hash. They do not independently improve translation or verify sync. For USS their immediate benefit is positioning the info note; basic search, translation and reference alignment must remain usable without this activity permission. The current USS setting is optional and defaults off. A bounded native subtitle-loaded notice is the preferred long-term integration and should be discussed before expanding user permissions merely for a notice.
+
+## Subsequent comparison and isolated bundle
+
+Run https://github.com/EzerchE/NuvioDesktop/actions/runs/43011337221 compared unchanged Dev with feature commit 6deef9c. The base's 50 selected tests failed seven cases. The patched full 1,899-test suite failed five cases, skipped one and passed 1,893. The two Windows cache resource locks reproduced on base and passed after explicit resource closure; all five remaining failures also reproduce on base. The historical image-animation and QuickJS failures did not reproduce in either comparison and remain intermittent.
+
+See [the detailed nine-failure review](test-failure-review-20261111.md). The workflow's success describes build/bundle export, not a green full suite; failure counts are retained explicitly. An own-fork unpublished draft bundle was authorized and exported without Actions artifact/cache storage. Its SHA256 was checked before extraction into an isolated directory. The original installed Nuvio application was not replaced; separate APPDATA, LOCALAPPDATA and user.home directories are used. Native acceptance is still pending guest-mode entry and explicit user activity consent.
+
+USS server release 2.13.70 passed its own Linux/Windows CI and protected Oracle publication independently of this client prototype. Its activity permission remains optional/off by default. This does not ship the prototype to ordinary Nuvio users.
