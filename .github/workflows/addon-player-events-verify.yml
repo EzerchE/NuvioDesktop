@@ -2,6 +2,8 @@ name: Addon player events verification
 on:
   push:
     branches: [codex/addon-player-position-events]
+    paths-ignore:
+      - docs/**
 permissions:
   contents: read
 concurrency:
