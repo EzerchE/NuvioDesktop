@@ -9,6 +9,7 @@ Own-fork Desktop test build only. The installed Nuvio application, original prof
 - With AutoSync disabled, the external Dutch SRT loaded and rendered its original dialogue, including the cue at 00:38.
 - With AutoSync enabled on the identical reference MKV and external SRT, Nuvio marked the selected addon subtitle as auto-synced. The generated SRT's SHA256 was identical to the source: `1146fe8a924306d680d9b7c82cf652e56e9f1ed28c81142fa477daee04b45b58`. Its timestamps were unchanged. This case did not produce a double timing correction.
 - The real compiled timeline retimer also preserved all timestamps with an extra ten-second USS note at 23, 150 and 300 seconds. This algorithm check is separate from native rendering.
+- A separate algorithm probe introduced an eight-second delay into the official Dutch SRT. The compiled application retimer found a confident scale of 1 and offset of -8,000 ms. This demonstrates correction against the supplied reference, not listening-based verification or customer-file acceptance.
 - A successfully delivered native player event arrived with the same `libmpv` identity as the native subtitle request. No audio, media URL or filename was included in that event.
 - Focused follow-up compilation passed. Sixty-six local JUnit tests passed, covering event/consent boundaries, network gating, manual-delay preservation and the corrected baseline fixtures. This is not a fresh full-suite result.
 
